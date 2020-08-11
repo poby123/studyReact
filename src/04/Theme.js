@@ -23,6 +23,7 @@ export default {
     secondary: '#795548',
     white: '#FFFFFF',
     gray: '#CCCCCC',
+    error: 'red',
     default: '#999999',
   },
   size: {
