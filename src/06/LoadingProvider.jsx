@@ -9,6 +9,7 @@ class LoadingProvider extends React.Component {
     this.setLoading = this.setLoading.bind(this);
   }
 
+  //return data of provider.
   getChildContext() {
     return {
       loading: this.state.loading,
@@ -20,11 +21,13 @@ class LoadingProvider extends React.Component {
     this.setState({ loading });
   }
 
+  //render children
   render() {
     return this.props.children;
   }
 }
 
+//define child context type
 LoadingProvider.childContextTypes = {
   loading: PropTypes.bool,
   setLoading: PropTypes.func,
