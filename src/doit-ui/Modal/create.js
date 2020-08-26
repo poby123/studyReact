@@ -18,7 +18,7 @@ export default function craeteModalProvider(ContentMap = {}) {
       this.setState({ showModal: true });
     }
     handleClose() {
-      this.state({ showModal: false });
+      this.setState({ showModal: false });
     }
     render() {
       const { children } = this.props;

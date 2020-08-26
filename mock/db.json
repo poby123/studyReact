@@ -15,6 +15,26 @@
       "totalPrice": 1230000,
       "currentPrice": 20000,
       "dateTime": "2019/01/20 07:23:22"
+    },
+    {
+      "currentPrice": "30,000원",
+      "id": 3
+    },
+    {
+      "currentPrice": "4,216,000원",
+      "id": 4
+    },
+    {
+      "currentPrice": "216,000원",
+      "id": 5
+    },
+    {
+      "currentPrice": "216,000원",
+      "id": 6
+    },
+    {
+      "currentPrice": "30,000원",
+      "id": 7
     }
   ]
 }
