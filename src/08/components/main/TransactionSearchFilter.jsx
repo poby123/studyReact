@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-
+import PropTypes from 'prop-types';
 import InlineList from '../../../doit-ui/InlineList';
 import Button from '../../../doit-ui/Button';
 import Text from '../../../doit-ui/Text';
@@ -7,13 +7,21 @@ import Input from '../../../doit-ui/Input';
 import Form from '../../../doit-ui/Form';
 import Select, { Option } from '../../../doit-ui/Select';
 
-// import Api from '../../Api';
+import Api from '../../Api';
+import { propTypes } from '../../../doit-ui/Spacing';
 
 class TransactionSearchFilter extends PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  handleSubmit(params) {
+    Api.get('/transactions', { params }).then(({ data }) => this.props.setTransactionList(data));
+  }
   render() {
-    const { initValues } = this.props;
     return (
-      <Form onSubmit={this.handleSubmit} initValues={initValues}>
+      <Form onSubmit={(values) => Api.get('/transactions', { params: values })}>
         <Form.Consumer>
           {({ onChange, values }) => (
             <InlineList spacingBetween={2} verticalAlign="bottom">
@@ -30,13 +38,13 @@ class TransactionSearchFilter extends PureComponent {
                 name="currentPrice_gte"
                 label="최소 거래가"
                 onChange={onChange}
-                value={values['currentPrice_gte']}
+                value={values['currentPrice_gte']} //최솟값
               />
               <Input
                 name="currentPrice_lte"
                 label="최대 거래가"
                 onChange={onChange}
-                value={values['currentPrice_lte']}
+                value={values['currentPrice_lte']} //최댓값
               />
               <Button type="submit" primary>
                 검색
@@ -49,6 +57,6 @@ class TransactionSearchFilter extends PureComponent {
   }
 }
 
-TransactionSearchFilter.propTypes = {};
+TransactionSearchFilter.propTypes = { setTransactionList: PropTypes.func };
 
 export default TransactionSearchFilter;
