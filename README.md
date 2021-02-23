@@ -1,68 +1,204 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## React Native 개발환경 설정
+#### 1. React Native Cli 다운로드
+```shell
+npm install -g react-native-cli
+```
+#### 2. React Native 프로젝트 생성
+```shell
+npx react-native init [project-name]
+```
+#### 3. IOS 및 안드로이드 동작확인
+##### ios
+ios를 확인하기 위해서는 애플 개발자 계정과 ios 기기를 사용해야 한다.
+```shell
+npm run ios
+```
 
-## Available Scripts
+##### android
+<a href="https://reactnative.dev/docs/environment-setup">안드로이드 환경설정하기!</a>
+```shell
+npm run android
+```
 
-In the project directory, you can run:
+#### 4. React Native Web 설정
+다음 명령어들을 사용해서 필요한 모듈을 설치한다.
+```shell
+npm install --save react-dom
+npm install --save-dev @babel/core babel-loader @babel/preset-react @babel/preset-env
+npm install --save-dev webpack webpack-cli webpack-dev-server html-webpack-plugin
+```
 
-### `yarn start`
+설치가 끝나면 package.json의 script를 아래와 같이 수정한다.
+```json
+"scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "build-react": "webpack --mode production",
+    "start-react": "webpack serve --config ./webpack.config.js --mode development",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+webpack 설정을 하기 위해 프로젝트의 root 경로에 webpack.config.js를 만들고 다음의 내용을 복사, 붙여넣기한다.
+```js
+const path = require('path')
+const HTMLWebpackPlugin = require('html-webpack-plugin')
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
+  template: path.resolve(__dirname, './public/index.html'),
+  filename: 'index.html',
+  inject: 'body',
+})
 
-### `yarn test`
+module.exports = {
+  entry: path.join(__dirname, 'index.web.js'),
+  output: {
+    filename: 'bundle.js',
+    path: path.join(__dirname, '/build'),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules\/(?!()\/).*/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react'],
+          },
+        },
+      },
+    ],
+  },
+  plugins: [HTMLWebpackPluginConfig],
+  devServer: {
+  	open: true,
+    historyApiFallback: true,
+    contentBase: './',
+    hot: true,
+  },
+}
+```
+root 경로에 public 폴더를 만들고, public 폴더안에 index.html을 만든다.
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>React Native Web</title>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
+```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+index.web.js라는 파일을 root 경로에 생성하고, 아래의 내용을 복사, 붙여넣기 한다.
+```js
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-### `yarn build`
+import App from './App.web'
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+ReactDOM.render(<App />, document.getElementById('app'))
+```
+index.web.js에서 사용할 App.web.js도 root 경로에 만들어준다.
+```js
+import React from 'react'
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+function App() {
+  return (
+    <>
+      <h1>Hello world from react</h1>
+    </>
+  )
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+export default App
+```
 
-### `yarn eject`
+웹 설정이 잘 되었는지 확인하자.
+```shell
+npm run start-react
+```
+잘 되었다면 제대로 된 react-native 코드로 만들어보자. 이를 위해, react-native-web을 설치한다.
+```shell
+npm install react-native-web
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+webpack.config.js 에 다음 부분을 추가한다.
+```js
+resolve: {
+  alias: {
+    'react-native$': 'react-native-web',
+  },
+},
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+webpack.config.js는 다음과 같은 모양이 된다.
+```js
+const path = require('path')
+const HTMLWebpackPlugin = require('html-webpack-plugin')
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
+  template: path.resolve(__dirname, './public/index.html'),
+  filename: 'index.html',
+  inject: 'body',
+})
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+module.exports = {
+  entry: path.join(__dirname, 'index.web.js'),
+  output: {
+    filename: 'bundle.js',
+    path: path.join(__dirname, '/build'),
+  },
+  resolve: {
+    alias: {
+      'react-native$': 'react-native-web',
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules\/(?!()\/).*/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react'],
+          },
+        },
+      },
+    ],
+  },
+  plugins: [HTMLWebpackPluginConfig],
+  devServer: {
+    open: true,
+    historyApiFallback: true,
+    contentBase: './',
+    hot: true,
+  },
+}
+```
 
-## Learn More
+그리고 App.web.js 파일을 다음과 같이 수정한다.
+```js
+import React from 'react'
+import {View, Text} from 'react-native';
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+function App() {
+  return (
+    <View>
+      <Text>Hello world from react</Text>
+    </View>
+  )
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+export default App
+```
 
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+이제 실행해서 잘 되는지 확인한다.
+```shell
+npm run start-react
+```
